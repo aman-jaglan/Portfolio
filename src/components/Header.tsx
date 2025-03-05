@@ -61,6 +61,47 @@ const Logo = styled.h1`
   }
 `;
 
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #a8e6cf;
+    transition: width 0.3s ease;
+  }
+  
+  &:hover:after {
+    width: 100%;
+  }
+`;
+
+const LogoImage = styled.img`
+  height: 40px;
+  width: auto;
+  margin-right: 10px;
+  
+  @media (max-width: 768px) {
+    height: 32px;
+  }
+`;
+
+const LogoText = styled.h1`
+  font-size: 28px;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+  
+  @media (max-width: 768px) {
+    font-size: 22px;
+  }
+`;
 const Nav = styled.nav`
   display: flex;
   gap: 15px;
@@ -136,7 +177,10 @@ const HeaderComponent: React.FC = () => {
     }}>
       <TopRow>
         <Link to="/">
-          <Logo>Aman Jaglan</Logo>
+          <LogoContainer>
+            <LogoImage src="/Feather.png" alt="Aman Jaglan Logo" />
+            <LogoText>Aman Jaglan</LogoText>
+          </LogoContainer>
         </Link>
         <Nav>
           <NavLink to="/" $active={location.pathname === '/'}>
