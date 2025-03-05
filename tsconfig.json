@@ -5,6 +5,8 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "typeRoots": ["./node_modules/@types"],
+    "include": ["./src"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
@@ -14,6 +16,6 @@
     "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
   }
 }

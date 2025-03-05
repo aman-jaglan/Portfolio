@@ -11,6 +11,7 @@ import ProjectDetail from './pages/ProjectDetail';
 import About from './pages/About';
 import Blogs from './pages/Blogs';
 import Contact from './pages/Contact';
+import MachineLearning from "./pages/MachineLearning";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -47,6 +48,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/experience" element={<Experience />} />
+            <Route path="/machine-learning" element={<MachineLearning />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/contact" element={<Contact />} />

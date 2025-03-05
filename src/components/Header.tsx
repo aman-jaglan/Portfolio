@@ -148,6 +148,9 @@ const HeaderComponent: React.FC = () => {
           <NavLink to="/experience" $active={location.pathname === '/experience'}>
             Experience
           </NavLink>
+          <NavLink to="/machine-learning" $active={location.pathname === '/machine-learning'}>
+            ML Playground
+          </NavLink>
           <NavLink to="/projects" $active={location.pathname === '/projects'}>
             Projects
           </NavLink>
