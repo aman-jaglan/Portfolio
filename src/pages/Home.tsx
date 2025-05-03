@@ -3,106 +3,224 @@ import styled from 'styled-components';
 import ReactTypingEffect from 'react-typing-effect';
 import { useNavigate } from 'react-router-dom';
 
-// Define a type for the ImportStatement component props
-interface ImportStatementProps {
-  visible: boolean;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  'aria-label'?: string;
-  children: React.ReactNode;
-}
+const VideoBackground = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.85); // Darker overlay for better text visibility
+  backdrop-filter: blur(2px); // Subtle blur effect
 
-const HeroSection = styled.section`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background: linear-gradient(45deg, rgba(45, 64, 89, 0.8), rgba(168, 230, 207, 0.6)),
-    url('https://source.unsplash.com/random/1920x1080/?coding,data') no-repeat center center/cover;
-  text-align: center;
-  color: #fff;
-  position: relative;
-  contain: paint layout;
-  padding: 20px;
-
-  @media (max-width: 768px) {
-    height: 90vh;
-    align-items: flex-start;
+  video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    opacity: 0.25; // Reduced opacity
+    filter: brightness(0.7) contrast(1.2); // Adjust brightness and contrast
   }
 `;
 
+const MainContainer = styled.div`
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(15, 15, 15, 0.95); // Dark background with slight transparency
 
-const Overlay = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.4);
-  mix-blend-mode: multiply;
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(41, 41, 41, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(41, 41, 41, 0.15) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(#ffffff10 1px, transparent 1px),
+      radial-gradient(#ffffff10 1px, transparent 1px);
+    background-position: 0 0, 25px 25px;
+    background-size: 50px 50px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1;
+  }
 `;
 
-const HeroContent = styled.div`
+const HeroSection = styled.section`
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
   position: relative;
   z-index: 1;
+`;
+
+const ContentWrapper = styled.div`
   max-width: 1200px;
-  padding: 0 20px;
+  width: 100%;
   text-align: center;
+  color: #ffffff;
 `;
 
 const Title = styled.h1`
-  font-size: clamp(2rem, 8vw, 4rem);
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
+  font-size: clamp(2.5rem, 8vw, 5rem);
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #666666 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
 
-  @media (max-width: 768px) {
-    white-space: normal;
-    margin-top: 2rem;
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
   }
 `;
 
 const Subtitle = styled.div`
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: rgba(255, 255, 255, 0.7);
   margin: 2rem auto;
   max-width: 800px;
   line-height: 1.6;
-  font-weight: 300;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  opacity: 0;
+  animation: fadeIn 1s ease forwards 0.5s;
 `;
 
-const ImportStatement = styled.button<{ $visible: boolean }>`
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  color: #a8e6cf;
-  font-family: 'Fira Code', monospace;
-  cursor: pointer;
-  margin-top: 3rem;
-  padding: 1rem 2rem;
-  border: 2px solid #a8e6cf;
+const ImportButton = styled.button<{ $visible: boolean }>`
+  font-size: 1.2rem;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 2.5rem;
   border-radius: 50px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, opacity;
+  cursor: pointer;
+  transition: all 0.3s ease;
   opacity: ${props => (props.$visible ? 1 : 0)};
-  transform: ${props => (props.$visible ? "translateY(0)" : "translateY(20px)")};
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
+  transform: ${props => (props.$visible ? 'translateY(0)' : 'translateY(20px)')};
+  backdrop-filter: blur(10px);
+  margin-top: 3rem;
 
   &:hover {
-    background: rgba(168, 230, 207, 0.2);
-    transform: translateY(-2px) scale(1.05);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
   }
 
   span {
-    font-size: 1.5em;
-    transition: transform 0.3s ease;
+    margin: 0 0.5rem;
+  }
+`;
+
+const ScrollIndicator = styled.div`
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  opacity: 0;
+  animation: fadeIn 1s ease forwards 1s;
+
+  &::after {
+    content: '';
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 0.5; }
+    50% { transform: scaleY(0.7); opacity: 1; }
+  }
+`;
+
+const DemoButton = styled.button<{ $visible: boolean }>`
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: ${props => (props.$visible ? 1 : 0)};
+  transform: ${props => (props.$visible ? 'translateY(0)' : 'translateY(20px)')};
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  z-index: 1000;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const DemoDisplay = styled.div`
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 300px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
   }
 `;
 
@@ -110,25 +228,17 @@ const Home: React.FC = () => {
   const [showImportStatement, setShowImportStatement] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Updated text and timing for a faster, simultaneous effect.
-  const titleText = "{Hello, welcome to my world!}";
-  const subtitleText = "Some say you can't be a data scientist and a web developer. I say, hold my coffee.";
-
-  // New timing: using faster speeds (50ms per char for title, 40ms per char for subtitle)
-  // and the same initial delay for both (500ms).
-  const typingDuration = {
-    title: titleText.length * 50 + 500, // 50ms/char + 500ms delay
-    subtitle: subtitleText.length * 40 + 500 // 40ms/char + 500ms delay
-  };
+  const titleText = "Building Digital Experiences";
+  const subtitleText = "Data Scientist & Full Stack Developer crafting innovative solutions at the intersection of AI and modern web technologies";
 
   useEffect(() => {
-    // Wait until the longer of the two effects has finished.
-    const totalDuration = Math.max(typingDuration.title, typingDuration.subtitle);
     const timer = setTimeout(() => {
       setShowImportStatement(true);
-    }, totalDuration);
+    }, 2000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleImportClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -137,37 +247,49 @@ const Home: React.FC = () => {
   };
 
   return (
-    <HeroSection role="banner" aria-label="Main welcome section">
-      <Overlay aria-hidden="true" />
-      <HeroContent role="region" aria-label="Introduction content">
-        <Title>
-          <ReactTypingEffect
-            text={[titleText]}
-            speed={50}
-            eraseDelay={1000000}
-            typingDelay={500}
-          />
-        </Title>
+    <MainContainer>
+      <VideoBackground>
+        <video autoPlay loop muted playsInline>
+          <source src="/credgeAI.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </VideoBackground>
+      <HeroSection>
+        <ContentWrapper>
+          <Title>
+            <ReactTypingEffect
+              text={[titleText]}
+              speed={50}
+              eraseDelay={1000000}
+              typingDelay={500}
+            />
+          </Title>
 
-        <Subtitle>
-          <ReactTypingEffect
-            text={[subtitleText]}
-            speed={40}
-            eraseDelay={1000000}
-            typingDelay={500}
-          />
-        </Subtitle>
+          <Subtitle>
+            <ReactTypingEffect
+              text={[subtitleText]}
+              speed={40}
+              eraseDelay={1000000}
+              typingDelay={1000}
+            />
+          </Subtitle>
 
-        <ImportStatement
-          $visible={showImportStatement}
-          onClick={handleImportClick}
-          aria-label="Navigate to projects section"
-        >
-          <span>#</span>import Projects
-          <span aria-hidden="true">→</span>
-        </ImportStatement>
-      </HeroContent>
-    </HeroSection>
+          <ImportButton
+            $visible={showImportStatement}
+            onClick={handleImportClick}
+            aria-label="View projects"
+          >
+            <span>{"{"}</span>
+            Explore Projects
+            <span>{"}"}</span>
+          </ImportButton>
+
+          <ScrollIndicator>
+            scroll to explore
+          </ScrollIndicator>
+        </ContentWrapper>
+      </HeroSection>
+    </MainContainer>
   );
 };
 

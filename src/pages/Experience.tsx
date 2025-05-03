@@ -1,8 +1,8 @@
-
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { SharedContainer } from "../styles/theme";
 
-// Define experience data interface
+// Define interfaces
 interface ExperienceItem {
   year: string;
   role: string;
@@ -11,21 +11,58 @@ interface ExperienceItem {
   points: string[];
 }
 
+interface ProjectItem {
+  name: string;
+  description: string;
+  technologies: string[];
+  link?: string;
+  github?: string;
+}
+
 // Styled components
 const ExperienceSection = styled.section`
-  position: relative;
+  ${SharedContainer.MainContainer}
   padding: 100px 0;
-  background-color: #fff;
-  background-image: radial-gradient(#a8e6cf 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-color: #0f0f0f;
+  position: relative;
   min-height: 100vh;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 20%, rgba(41, 41, 41, 0.025) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(41, 41, 41, 0.025) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+`;
+
+const SectionTitle = styled.h2`
+  ${SharedContainer.GradientText}
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease forwards;
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;
 
 const ExperienceContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  ${SharedContainer.ContentWrapper}
   position: relative;
+  padding-top: 60px;
 
   &::before {
     content: '';
@@ -34,67 +71,86 @@ const ExperienceContainer = styled.div`
     transform: translateX(-1px);
     width: 2px;
     height: 100%;
-    background: #a8e6cf;
+    background: linear-gradient(180deg, 
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
     z-index: 1;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
   }
 `;
 
-const ExperienceItem = styled.div`
+const ExperienceItem = styled.div<{ isVisible: boolean }>`
   position: relative;
   margin: 100px 0;
   z-index: 2;
+  opacity: ${props => props.isVisible ? 1 : 0};
+  transform: translateX(${props => props.isVisible ? '0' : '-50px'});
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:nth-child(even) {
+    transform: translateX(${props => props.isVisible ? '0' : '50px'});
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) scale(${props => props.isVisible ? 1 : 0});
+    width: 20px;
+    height: 20px;
+    background: #0f0f0f;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    z-index: 3;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  }
+
+  &:hover::before {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-50%) scale(1.2);
+  }
 `;
 
-const CardWrapper = styled.div`
-  background: rgba(255, 255, 255, 0.97);
-  border: 3px solid #a8e6cf;
+const CardWrapper = styled.div<{ isVisible: boolean }>`
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 30px;
   box-sizing: border-box;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 600px;
-  height: 200px;
   position: relative;
   left: 50%;
-  transform: translateX(-50%);
-  overflow: hidden;
+  transform: translateX(-50%) perspective(1000px) rotateY(${props => props.isVisible ? '0' : '-10deg'});
+  transform-origin: center;
+  opacity: ${props => props.isVisible ? 1 : 0};
 
   &:hover {
-    width: 1000px;
-    height: 300px;
-    transform: translateX(-65%);
-    z-index: 3;
-  }
-
-  &:hover::before {
-    opacity: 1;
+    transform: translateX(-50%) perspective(1000px) rotateY(5deg);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
   }
 
   @media (max-width: 1200px) {
     width: 500px;
+  }
+
+  @media (max-width: 768px) {
+    width: 90%;
+    left: 0;
+    transform: none;
     
     &:hover {
-      width: 90%;
-      transform: translateX(-55%);
+      transform: none;
     }
   }
-`;
-
-const ExperienceTitle = styled.h3`
-  font-size: 32px;
-  font-weight: bold;
-  margin: 0 0 15px 0;
-  color: #2d4059;
-  transition: all 0.3s ease;
-`;
-
-const ExperienceSubTitle = styled.h4`
-  font-size: 26px;
-  margin: 0 0 15px 0;
-  color: #2d4059;
-  transition: all 0.3s ease;
 `;
 
 const LogoContainer = styled.div`
@@ -110,34 +166,57 @@ const CompanyLogo = styled.img`
   object-fit: contain;
   border-radius: 8px;
   padding: 5px;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   ${CardWrapper}:hover & {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(5deg);
+    background: rgba(255, 255, 255, 0.1);
   }
+`;
+
+const ExperienceTitle = styled.h3`
+  ${SharedContainer.GradientText}
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 0 15px 0;
+  transition: all 0.3s ease;
+`;
+
+const ExperienceSubTitle = styled.h4`
+  ${SharedContainer.GradientText}
+  font-size: 26px;
+  margin: 0 0 15px 0;
+  transition: all 0.3s ease;
 `;
 
 const ExperienceCompany = styled.p`
   font-size: 22px;
   margin: 0;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   transition: all 0.3s ease;
   font-weight: 500;
+
+  ${CardWrapper}:hover & {
+    color: rgba(255, 255, 255, 0.9);
+  }
 `;
 
 const ExperienceDetails = styled.div`
   font-size: 20px;
   margin-top: 30px;
   line-height: 1.6;
-  color: #444;
+  color: rgba(255, 255, 255, 0.6);
   opacity: 0;
-  transition: opacity 0.3s ease 0.1s;
-  padding-left: 80px; // Make space for logo
+  transform: translateY(20px);
+  transition: all 0.4s ease 0.2s;
 
   ${CardWrapper}:hover & {
     opacity: 1;
+    transform: translateY(0);
+    color: rgba(255, 255, 255, 0.8);
   }
 
   ul {
@@ -149,12 +228,30 @@ const ExperienceDetails = styled.div`
       position: relative;
       padding-left: 25px;
       margin-bottom: 12px;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: all 0.3s ease;
+      
+      ${CardWrapper}:hover & {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      
+      &:nth-child(1) { transition-delay: 0.1s; }
+      &:nth-child(2) { transition-delay: 0.2s; }
+      &:nth-child(3) { transition-delay: 0.3s; }
       
       &::before {
         content: '▹';
         position: absolute;
         left: 0;
-        color: #a8e6cf;
+        color: rgba(255, 255, 255, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      &:hover::before {
+        color: rgba(255, 255, 255, 0.8);
+        transform: scale(1.2);
       }
     }
   }
@@ -164,7 +261,6 @@ const ExperienceDetails = styled.div`
   }
 `;
 
-// Improved responsive handling
 const ResponsiveContainer = styled.div`
   @media (max-width: 768px) {
     overflow-x: hidden;
@@ -175,6 +271,9 @@ const ResponsiveContainer = styled.div`
 
 // The main component
 const Experience: React.FC = () => {
+  const [visibleItems, setVisibleItems] = React.useState<boolean[]>([]);
+  const experienceRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   // Sample experience data
   const experiences: ExperienceItem[] = [
     {
@@ -233,37 +332,92 @@ const Experience: React.FC = () => {
     }
   ];
 
+  const projects: ProjectItem[] = [
+    {
+      name: "AI-Powered Analytics Platform",
+      description: "Advanced analytics platform leveraging machine learning for real-time insights and predictions. Features include automated data processing, interactive visualizations, and predictive modeling.",
+      technologies: ["Python", "TensorFlow", "React", "Node.js", "AWS"],
+      github: "https://github.com/yourusername/ai-analytics",
+      link: "https://ai-analytics-demo.com"
+    },
+    {
+      name: "Smart Portfolio Website",
+      description: "Modern portfolio website built with React and TypeScript, featuring smooth animations, dark theme, and responsive design. Implements best practices for performance and accessibility.",
+      technologies: ["React", "TypeScript", "Styled Components", "Framer Motion"],
+      github: "https://github.com/yourusername/portfolio"
+    },
+    {
+      name: "Data Visualization Dashboard",
+      description: "Interactive dashboard for visualizing complex datasets with customizable charts and real-time updates. Supports multiple data sources and export formats.",
+      technologies: ["D3.js", "React", "Node.js", "MongoDB", "Express"],
+      github: "https://github.com/yourusername/data-viz",
+      link: "https://data-viz-demo.com"
+    }
+  ];
+
+  useEffect(() => {
+    setVisibleItems(new Array(experiences.length).fill(false));
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = experienceRefs.current.findIndex(ref => ref === entry.target);
+          if (index !== -1) {
+            setVisibleItems(prev => {
+              const newState = [...prev];
+              newState[index] = entry.isIntersecting;
+              return newState;
+            });
+          }
+        });
+      },
+      {
+        threshold: 0.2,
+        rootMargin: '-50px'
+      }
+    );
+
+    experienceRefs.current.forEach(ref => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <ExperienceSection>
-      <ResponsiveContainer>
-        <ExperienceContainer>
-          {experiences.map((exp, index) => (
-            <ExperienceItem key={index}>
-              <CardWrapper>
-                <LogoContainer>
-                  <CompanyLogo
-                    src={exp.logo}
-                    alt={`${exp.company} logo`}
-                  />
-                  <div>
-                    <ExperienceTitle>{exp.year}</ExperienceTitle>
-                    <ExperienceSubTitle>{exp.role}</ExperienceSubTitle>
-                    <ExperienceCompany>{exp.company}</ExperienceCompany>
-                  </div>
-                </LogoContainer>
+      <SectionTitle>Professional Journey</SectionTitle>
+      <ExperienceContainer>
+        {experiences.map((exp, index) => (
+          <ExperienceItem 
+            key={index}
+            ref={el => experienceRefs.current[index] = el}
+            isVisible={visibleItems[index]}
+          >
+            <CardWrapper isVisible={visibleItems[index]}>
+              <LogoContainer>
+                <CompanyLogo
+                  src={exp.logo}
+                  alt={`${exp.company} logo`}
+                />
+                <div>
+                  <ExperienceTitle>{exp.year}</ExperienceTitle>
+                  <ExperienceSubTitle>{exp.role}</ExperienceSubTitle>
+                  <ExperienceCompany>{exp.company}</ExperienceCompany>
+                </div>
+              </LogoContainer>
 
-                <ExperienceDetails>
-                  <ul>
-                    {exp.points.map((point, i) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
-                </ExperienceDetails>
-              </CardWrapper>
-            </ExperienceItem>
-          ))}
-        </ExperienceContainer>
-      </ResponsiveContainer>
+              <ExperienceDetails>
+                <ul>
+                  {exp.points.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ul>
+              </ExperienceDetails>
+            </CardWrapper>
+          </ExperienceItem>
+        ))}
+      </ExperienceContainer>
     </ExperienceSection>
   );
 };

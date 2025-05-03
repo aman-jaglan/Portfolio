@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import styled, { css, keyframes } from 'styled-components';
-
-// Keyframes for animations
-const glow = keyframes`
-  0% { box-shadow: 0 0 5px rgba(168, 230, 207, 0.5); }
-  50% { box-shadow: 0 0 15px rgba(168, 230, 207, 0.8); }
-  100% { box-shadow: 0 0 5px rgba(168, 230, 207, 0.5); }
-`;
+import styled from 'styled-components';
+import { SharedContainer } from '../styles/theme';
 
 const HeaderContainer = styled.header`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px 40px;
-  background: linear-gradient(135deg, #f0f0f0, #fff);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: rgba(15, 15, 15, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -28,6 +23,8 @@ const HeaderContainer = styled.header`
 
 const TopRow = styled.div`
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -35,29 +32,6 @@ const TopRow = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 15px;
-  }
-`;
-
-const Logo = styled.h1`
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-  font-family: 'Courier New', Courier, monospace;
-  position: relative;
-  
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #a8e6cf;
-    transition: width 0.3s ease;
-  }
-  
-  &:hover:after {
-    width: 100%;
   }
 `;
 
@@ -74,7 +48,7 @@ const LogoContainer = styled.div`
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #a8e6cf;
+    background: linear-gradient(135deg, #ffffff 0%, #666666 100%);
     transition: width 0.3s ease;
   }
   
@@ -87,6 +61,7 @@ const LogoImage = styled.img`
   height: 40px;
   width: auto;
   margin-right: 10px;
+  filter: brightness(0) invert(1);
   
   @media (max-width: 768px) {
     height: 32px;
@@ -96,15 +71,17 @@ const LogoImage = styled.img`
 const LogoText = styled.h1`
   font-size: 28px;
   font-weight: bold;
-  font-family: 'Courier New', Courier, monospace;
+  ${SharedContainer.GradientText}
+  margin: 0;
   
   @media (max-width: 768px) {
     font-size: 22px;
   }
 `;
+
 const Nav = styled.nav`
   display: flex;
-  gap: 15px;
+  gap: 20px;
   
   @media (max-width: 768px) {
     width: 100%;
@@ -120,36 +97,32 @@ interface NavLinkProps {
 
 const NavLink = styled(Link)<NavLinkProps>`
   font-weight: 500;
-  font-family: 'Courier New', Courier, monospace;
+  color: ${props => props.$active ? '#fff' : 'rgba(255, 255, 255, 0.7)'};
   transition: all 0.3s ease;
   padding: 8px 12px;
   border-radius: 4px;
   position: relative;
+  font-size: 1rem;
   
   &:after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: -2px;
     left: 50%;
     transform: translateX(-50%);
     width: ${props => props.$active ? '100%' : '0'};
-    height: 3px;
-    background-color: #a8e6cf;
+    height: 2px;
+    background: linear-gradient(135deg, #ffffff 0%, #666666 100%);
     transition: width 0.3s ease;
   }
   
   &:hover {
-    color: #007acc;
+    color: #fff;
     
     &:after {
       width: 100%;
     }
   }
-  
-  ${props => props.$active && css`
-    color: #007acc;
-    animation: ${glow} 2s infinite;
-  `}
 `;
 
 const HeaderComponent: React.FC = () => {
@@ -172,8 +145,8 @@ const HeaderComponent: React.FC = () => {
 
   return (
     <HeaderContainer style={{
-      boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.15)' : '0 2px 10px rgba(0, 0, 0, 0.1)',
-      padding: scrolled ? '15px 40px' : '20px 40px'
+      padding: scrolled ? '15px 40px' : '20px 40px',
+      background: scrolled ? 'rgba(15, 15, 15, 0.95)' : 'rgba(15, 15, 15, 0.8)',
     }}>
       <TopRow>
         <Link to="/">
@@ -191,9 +164,6 @@ const HeaderComponent: React.FC = () => {
           </NavLink>
           <NavLink to="/experience" $active={location.pathname === '/experience'}>
             Experience
-          </NavLink>
-          <NavLink to="/machine-learning" $active={location.pathname === '/machine-learning'}>
-            ML Playground
           </NavLink>
           <NavLink to="/projects" $active={location.pathname === '/projects'}>
             Projects

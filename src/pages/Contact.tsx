@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { keyframes, ThemeProvider, css } from "styled-components";
 import { toast } from "sonner";
 import emailjs from 'emailjs-com';
+import { SharedContainer } from "../styles/theme";
 
 // Define interfaces for type safety
 interface FormState {
@@ -28,13 +29,13 @@ interface ThemeInterface {
 
 // Theme definition
 const terminalTheme: ThemeInterface = {
-  primary: "#0f0",
-  background: "#000",
-  error: "#f00",
-  info: "#0ff",
-  success: "#0f0",
-  warning: "#ff0",
-  font: "'Fira Code', 'Courier New', monospace",
+  primary: "#ffffff",
+  background: "#0f0f0f",
+  error: "#ff4444",
+  info: "#44aaff",
+  success: "#44ff44",
+  warning: "#ffff44",
+  font: "'Courier New', Courier, monospace",
 };
 
 // Animations
@@ -67,13 +68,12 @@ const fadeIn = keyframes`
 
 // Styled Components
 const PageContainer = styled.div`
-  padding: 2rem;
-  background-color: #1a1a1a;
-  min-height: calc(100vh - 160px);
+  ${SharedContainer.MainContainer}
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background-color: #0f0f0f;
   
   @media (max-width: 768px) {
     padding: 1rem;
@@ -88,9 +88,11 @@ const TerminalContainer = styled.div`
   max-width: 800px;
   margin: 2rem auto;
   border-radius: 8px;
-  box-shadow: 0 0 20px rgba(15, 255, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
   overflow: hidden;
   animation: ${fadeIn} 0.5s ease-in-out;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   
   @media (max-width: 768px) {
     margin: 1rem auto;
@@ -98,20 +100,22 @@ const TerminalContainer = styled.div`
 `;
 
 const TerminalHeader = styled.div`
-  background: rgba(15, 255, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   
   &::before {
     content: '⬤ ⬤ ⬤';
-    color: #ff5f56;
+    color: #ff4444;
     margin-right: auto;
   }
 `;
 
 const TerminalTitle = styled.div`
+  ${SharedContainer.GradientText}
   font-weight: bold;
   font-size: 14px;
 `;
@@ -213,20 +217,15 @@ const TextAreaField = styled.textarea<InputFieldProps>`
 `;
 
 const SubmitButton = styled.button`
-  background: transparent;
-  border: 2px solid ${({ theme }) => theme.primary};
-  color: inherit;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  ${SharedContainer.Button}
   grid-column: 2;
   font-family: ${({ theme }) => theme.font};
+  margin-top: 1rem;
   
   &:hover {
-    background: ${({ theme }) => theme.primary};
-    color: ${({ theme }) => theme.background};
+    background: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(15, 255, 0, 0.2);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
   }
   
   &:active {
@@ -237,8 +236,7 @@ const SubmitButton = styled.button`
     opacity: 0.5;
     cursor: not-allowed;
     &:hover {
-      background: transparent;
-      color: inherit;
+      background: rgba(255, 255, 255, 0.05);
       transform: none;
       box-shadow: none;
     }
@@ -453,7 +451,7 @@ const Contact: React.FC = () => {
       <PageContainer>
         <TerminalContainer>
           <TerminalHeader>
-            <TerminalTitle>contact_terminal.exe</TerminalTitle>
+            <TerminalTitle>Contact Terminal</TerminalTitle>
           </TerminalHeader>
           <TerminalBody>
             <TerminalGrid>
