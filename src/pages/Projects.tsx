@@ -78,6 +78,46 @@ const glow = keyframes`
   100% { box-shadow: 0 0 20px rgba(255,255,255,0.1); }
 `;
 
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  margin-top: 1.5rem;
+  pointer-events: auto;
+`;
+
+const ActionButton = styled.a`
+  ${SharedContainer.Button}
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`;
+
 const ProjectCard = styled.div<{ color: string }>`
   position: relative;
   background: rgba(255, 255, 255, 0.03);
@@ -87,7 +127,7 @@ const ProjectCard = styled.div<{ color: string }>`
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
+  overflow: visible;
   transform-style: preserve-3d;
   perspective: 1000px;
 
@@ -101,6 +141,7 @@ const ProjectCard = styled.div<{ color: string }>`
     background: ${props => props.color};
     opacity: 0.1;
     transition: opacity 0.3s ease;
+    border-radius: 20px;
   }
 
   &::after {
@@ -128,6 +169,11 @@ const ProjectCard = styled.div<{ color: string }>`
     &::after {
       opacity: 0.1;
     }
+  }
+
+  &:hover ${ButtonGroup} {
+    opacity: 1;
+    transform: translateY(0);
   }
 `;
 
@@ -177,42 +223,6 @@ const TechTag = styled.span`
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-  }
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 1rem;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease;
-
-  ${ProjectCard}:hover & {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-const ActionButton = styled.a`
-  ${SharedContainer.Button}
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  font-size: 0.9rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-  }
-
-  svg {
-    width: 16px;
-    height: 16px;
   }
 `;
 
